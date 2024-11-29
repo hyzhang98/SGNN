@@ -2,7 +2,7 @@
 
 This repository is our implementation of 
 
->   Hongyuan Zhang, Yanan Zhu, and Xuelong Li,  "Decouple Graph Neural Networks: Train Multiple Simple GNNs Simultaneously Instead of One," *IEEE Transactions on Pattern Analysis and Machine Intelligence (T-PAMI)*, DOI: 10.1109/TPAMI.2024.3392782, 2024.[(arXiv)](https://arxiv.org/pdf/2304.10126.pdf)[(IEEE)](https://ieeexplore.ieee.org/document/10507024)
+>   Hongyuan Zhang, Yanan Zhu, and Xuelong Li,  "Decouple Graph Neural Networks: Train Multiple Simple GNNs Simultaneously Instead of One," *IEEE Transactions on Pattern Analysis and Machine Intelligence (T-PAMI)*, vol. 46, no. 11, pp. 7451-7462, 2024.[(arXiv)](https://arxiv.org/pdf/2304.10126.pdf)[(IEEE)](https://ieeexplore.ieee.org/document/10507024)
 
 *SGNN* attempts to further reduce the training complexity of each iteration from $\mathcal{O}(n^2) / \mathcal{O}(|\mathcal E|)$ (vanilla GNNs without acceleration tricks, e.g., [AdaGAE](https://github.com/hyzhang98/AdaGAE)) and $\mathcal O(n)$ (e.g., [AnchorGAE](https://github.com/hyzhang98/AnchorGAE-torch)) to $\mathcal O(m)$. 
 
@@ -51,8 +51,6 @@ python run_classfication.py
 
 #### Cora
 
-##### 
-
 eta = 100, BP_count=5
 
 ```python
@@ -71,8 +69,6 @@ layers = [
 
 
 #### Citeseer
-
-
 
 eta = 100, BP_count = 3
 
@@ -106,39 +102,50 @@ layers = [
 
 ### Node Clustering
 
-
-
 #### Cora
 
-- mask_rate = 0.2
-- overlook_rates=None
-- layers=[128, 64,32]
-- max_iter=200
-- batch=128
-- BP_count=10
-- learning_rate=10^-3
-- lam=10^-6
-- eta=1, loss = loss1 / sample_size
+eta = 1, BP_count = 10
+
+```python
+layers = [
+    LayerParam(128, inner_act=linear_func, act=leaky_relu_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+    LayerParam(64, inner_act=linear_func, act=leaky_relu_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+    LayerParam(32, inner_act=linear_func, act=linear_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+]
+```
 
 
 
-### Pubmed
 
-- mask_rate = 0.2
-- overlook_rates=None
-- layers=[256, 128]
-- max_iter=100
-- batch=4096
-- BP_count=10
-- learning_rate=10^-4 !
-- lam=10^-6
-- order=2
 
-- eta=10, loss = loss1 
-- AU -> relu
-- activation  -> leaky_relu=5 
+#### Pubmed
 
-### Citeseer
+eta = 10, BP_count = 10
+
+```python
+leaky_relu_func = Func(torch.nn.functional.leaky_relu, negative_slope=5.0)
+layers = [
+    LayerParam(128, inner_act=linear_func, act=leaky_relu_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+    LayerParam(64, inner_act=linear_func, act=leaky_relu_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+    LayerParam(32, inner_act=linear_func, act=linear_func, gnn_type=LayerParam.GAE,
+               mask_rate=0.2, lam=lam, max_iter=max_iter, learning_rate=learning_rate,
+               batch_size=batch_size),
+]
+```
+
+
+
+#### Citeseer
 
 - mask_rate = 0.2
 - overlook_rates=None
@@ -146,7 +153,7 @@ layers = [
 - max_iter=200
 - batch=256
 - BP_count=5
-- learning_rate=10^-4 !
+- learning_rate=**10^-4 **
 - lam=10^-6
 - eta=10, loss = loss1 
 - order=2
@@ -155,7 +162,7 @@ layers = [
 
 
 
-### Reddit 
+#### Reddit 
 
 - mask_rate = 0.2
 - overlook_rates=None
@@ -163,23 +170,24 @@ layers = [
 - max_iter=10000
 - batch=512
 - BP_count=5
-- learning_rate=10^-4 !
+- learning_rate=**1e-4**
 - lam=10^-6
 - eta=10, loss = loss1 
 - order=2
-- AU -> relu
+- inner_act -> relu
 - activation ->linear
 
 ## Citation
+
 ```
 @article{SGNN,
   author={Zhang, Hongyuan and Zhu, Yanan and Li, Xuelong},
   journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
   title={Decouple Graph Neural Networks: Train Multiple Simple GNNs Simultaneously Instead of One}, 
   year={2024},
-  volume={},
-  number={},
-  pages={1-1},
+  volume={46},
+  number={11},
+  pages={7451--7462},
   doi={10.1109/TPAMI.2024.3392782}
 }
 ```
